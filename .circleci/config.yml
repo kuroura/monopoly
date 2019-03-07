@@ -1,12 +1,11 @@
 version: 2.1
 
 vars:
-  bazel_cache_key: &bazel_cache_key bazel-{{ .Branch }}-1551968494
+  bazel_cache_key: &bazel_cache_key bazel-{{ .Branch }}-1551968594
 
 executors:
-  bazel:
-    docker:
-      - image: gcr.io/cloud-builders/bazel
+  machine:
+    machine: true
 
 commands:
   git_tree_must_be_clean:
@@ -21,18 +20,27 @@ commands:
 
 jobs:
   build:
-    executor: bazel
+    executor: machine
     steps:
       - checkout
       - restore_cache:
           key: *bazel_cache_key
       - run:
-          name: Format BUILD.bazel files
+          name: Install bazel
+          command: |
+            curl -L -o ~/bazel-installer.sh https://github.com/bazelbuild/bazel/releases/download/0.23.1/bazel-0.23.1-installer-linux-x86_64.sh
+            chmod +x ~/bazel-installer.sh
+            ~/bazel-installer.sh --user
+      - run:
+          name: Generate BUILD.bazel files
           command: bazel build //:gazelle
+      - run:
+          name: Format BUILD.bazel files
+          command: bazel build //:buildifier
       - save_cache:
           key: *bazel_cache_key
           paths:
-            - /workspace/.bazel
+            - ~/.cache/bazel
       - git_tree_must_be_clean
 
 workflows:
