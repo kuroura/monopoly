@@ -1,18 +1,39 @@
 version: 2.1
 
+vars:
+  bazel_cache_key: &bazel_cache_key bazel-{{ .Branch }}-1551968494
+
 executors:
-  alpine:
+  bazel:
     docker:
-      - image: alpine:3.9
+      - image: gcr.io/cloud-builders/bazel
+
+commands:
+  git_tree_must_be_clean:
+    description: Error when git tree is not clean
+    steps:
+      - run:
+          name: Test if git tree is clean
+          command: |
+            git diff
+            git status
+            test -z "$(git status --porcelain)"
 
 jobs:
   build:
-    executor: alpine
+    executor: bazel
     steps:
       - checkout
+      - restore_cache:
+          key: *bazel_cache_key
       - run:
-          name: Hello World!
-          command: echo 'Hello World!'
+          name: Format BUILD.bazel files
+          command: bazel build //:gazelle
+      - save_cache:
+          key: *bazel_cache_key
+          paths:
+            - /workspace/.bazel
+      - git_tree_must_be_clean
 
 workflows:
   version: 2
