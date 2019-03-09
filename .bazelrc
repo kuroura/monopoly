@@ -2,3 +2,5 @@
 # This helps us diagnose which options override others
 # (e.g. /etc/bazel.bazelrc vs. tools/bazel.rc)
 build --announce_rc
+
+test --test_verbose_timeout_warnings

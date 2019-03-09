@@ -1,0 +1,22 @@
+{
+  "assign": {
+    "only_files": {
+      "src/(external|third_party)/*": ""
+    }
+  },
+  "composites": {
+    "only_files": {
+      "src/(external|third_party)/*": ""
+    }
+  },
+  "nilness": {
+    "only_files": {
+      "src/(external|third_party)/*": ""
+    }
+  },
+  "shadow": {
+    "only_files": {
+      "src/(external|third_party)/*": ""
+    }
+  }
+}

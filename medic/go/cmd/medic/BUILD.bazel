@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/kuroura/monopoly/medic/go/cmd/medic",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "medic",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    timeout = "short",
+    srcs = ["main_test.go"],
+    embed = [":go_default_library"],
+)

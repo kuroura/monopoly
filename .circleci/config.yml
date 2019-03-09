@@ -33,15 +33,21 @@ jobs:
             ~/bazel-installer.sh --user
       - run:
           name: Generate BUILD.bazel files
-          command: bazel build //:gazelle
+          command: bazel run //:gazelle
       - run:
           name: Format BUILD.bazel files
-          command: bazel build //:buildifier
+          command: bazel run //:buildifier
+      - git_tree_must_be_clean
+      - run:
+          name: Build all
+          command: bazel build //...
+      - run:
+          name: Test all
+          command: bazel test //...
       - save_cache:
           key: *bazel_cache_key
           paths:
             - ~/.cache/bazel
-      - git_tree_must_be_clean
 
 workflows:
   version: 2
